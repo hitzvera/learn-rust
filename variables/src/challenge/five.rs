@@ -403,3 +403,40 @@ pub fn run_tests() {
         println!("⚠️  Some tests failed. Keep trying!");
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_calculate_price() {
+        assert_eq!(calculate_price(100.0, 20.0, 8.0), "$86.40");
+    }
+
+    #[test]
+    fn test_normalize_username() {
+        assert_eq!(normalize_username("  John Doe!!!  "), "john_doe");
+    }
+
+    #[test]
+    fn test_normalize_score() {
+        assert_eq!(normalize_score("85.5", 1.2), Ok(68));
+    }
+
+    #[test]
+    fn test_build_config() {
+        let config = build_config(None, Some("3306"), Some("prod.db.com")).unwrap();
+        assert_eq!(config.port, 3306);
+        assert_eq!(config.host, "prod.db.com");
+    }
+
+    #[test]
+    fn test_parse_log() {
+        let log = "[info] 2024-01-15 10:30:00: User login successful from 192.168.1.1";
+        let entry = parse_log(log).unwrap();
+        assert_eq!(entry.level, "INFO");
+        assert_eq!(entry.timestamp, "2024-01-15 10:30:00");
+        assert_eq!(entry.message, "User login successful from 192.168.1.1");
+        assert_eq!(entry.original_length, 39);
+    }
+}

@@ -1,4 +1,4 @@
-mod challange;
+mod challenge;
 
 fn main() {
     // Uncomment the challenge you want to run:
@@ -10,5 +10,5 @@ fn main() {
     // challange::four::run_examples();
 
     // YOUR CHALLENGE: Implement these functions using shadowing
-    challange::five::run_tests();
+    challenge::five::run_tests();
 }
