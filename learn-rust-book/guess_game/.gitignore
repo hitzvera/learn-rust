@@ -1,1 +1,6 @@
+# Ignore target folder at root level
 target/
+
+# Ignore target folder at any nesting level
+**/target/
+
