@@ -1,2 +1,27 @@
-/target/**
-/target
+# Rust
+/target/
+**/target/
+**/*.rs.bk
+*.pdb
+
+# Build output
+**/debug/
+**/release/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
