@@ -43,70 +43,60 @@ impl VendingMachine {
     }
 
     fn process_event(&mut self, event: VendingEvent) -> String {
-        let new_state_and_output: Option<(VendingState, String)> = match (&self.state, event) {
+        let old_state = std::mem::replace(&mut self.state, VendingState::Idle);
+
+        let (next_state, message) = match (old_state, event) {
             // From Idle state
-            (VendingState::Idle, VendingEvent::InsertCoin(amount)) => Some((
+            (VendingState::Idle, VendingEvent::InsertCoin(amount)) => (
                 VendingState::HasCredit(amount),
                 format!("💵 Inserted Rp {}. Credit: Rp {}", amount, amount),
-            )),
-            (VendingState::Idle, VendingEvent::SelectItem(item, price)) => Some((
+            ),
+            (VendingState::Idle, VendingEvent::SelectItem(item, price)) => (
                 VendingState::WaitingForMoney,
                 format!("📦 Selected {}. Please insert Rp {}", item, price),
-            )),
+            ),
 
             // From HasCredit state
-            (VendingState::HasCredit(credit), VendingEvent::InsertCoin(amount)) => Some((
-                VendingState::HasCredit(*credit + amount),
-                format!(
-                    "💵 Inserted Rp {}. Total credit: Rp {}",
-                    amount,
-                    *credit + amount
-                ),
-            )),
+            (VendingState::HasCredit(credit), VendingEvent::InsertCoin(amount)) => {
+                let new_credit = credit + amount;
+                (
+                    VendingState::HasCredit(new_credit),
+                    format!("💵 Inserted Rp {}. Total credit: Rp {}", amount, new_credit),
+                )
+            }
             (VendingState::HasCredit(credit), VendingEvent::SelectItem(item, price)) => {
-                if *credit >= price {
-                    let change = *credit - price;
-                    Some((
+                if credit >= price {
+                    let change = credit - price;
+                    (
                         VendingState::Dispensing(item.clone()),
                         format!("✅ Dispensing {}. Change: Rp {}", item, change),
-                    ))
+                    )
                 } else {
-                    Some((
-                        VendingState::HasCredit(*credit),
+                    (
+                        VendingState::HasCredit(credit),
                         format!(
                             "❌ Insufficient credit. Need Rp {}, have Rp {}",
-                            price - *credit,
-                            *credit
+                            price - credit,
+                            credit
                         ),
-                    ))
+                    )
                 }
             }
-            (VendingState::HasCredit(credit), VendingEvent::Cancel) => {
-                let refund = *credit;
-                Some((
-                    VendingState::Idle,
-                    format!("🔄 Cancelled. Refund: Rp {}", refund),
-                ))
-            }
+            (VendingState::HasCredit(credit), VendingEvent::Cancel) => (
+                VendingState::Idle,
+                format!("🔄 Cancelled. Refund: Rp {}", credit),
+            ),
 
             // From Dispensing state
             (VendingState::Dispensing(item), VendingEvent::Dispense) => {
-                Some((VendingState::Idle, format!("🎉 Enjoy your {}!", item)))
+                (VendingState::Idle, format!("🎉 Enjoy your {}!", item))
             }
 
             // Default
-            (_, _) => Some((
-                self.state.clone(),
-                "⚠️ Invalid action for current state".to_string(),
-            )),
+            (s, _) => (s, "⚠️ Invalid action".to_string()),
         };
-
-        if let Some((new_state, output)) = new_state_and_output {
-            self.state = new_state;
-            output
-        } else {
-            "⚠️ Invalid action for current state".to_string()
-        }
+        self.state = next_state;
+        message
     }
 
     fn show_menu(&self) {
