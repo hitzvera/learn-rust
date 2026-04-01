@@ -4,7 +4,7 @@ fn main() {
     // Uncomment the challenge you want to run:
 
     // Level 1: Basic Enums
-    // challenge::one::exercise();
+    challenge::one::exercise();
 
     // Level 2: Enums with Data
     // challenge::two::run_exercises();
@@ -16,5 +16,5 @@ fn main() {
     // challenge::four::run_exercises();
 
     // Level 5: Advanced Challenges
-    challenge::five::run_tests();
+    // challenge::five::run_tests();
 }

@@ -20,6 +20,7 @@
  */
 pub fn exercise_1() {
     // Define the enum
+    #[derive(Debug)]
     enum Direction {
         North,
         South,
@@ -58,9 +59,9 @@ fn get_opposite(dir: Direction) -> Direction {
 pub fn exercise_2() {
     let north = Direction::North;
     let south = get_opposite(north);
-    
+
     println!("Exercise 2 - Opposite of North: {:?}", south);
-    
+
     // Test all directions
     println!("  East → {:?}", get_opposite(Direction::East));
     println!("  West → {:?}", get_opposite(Direction::West));

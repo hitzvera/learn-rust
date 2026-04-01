@@ -8,7 +8,7 @@
 // Challenge 1: State Machine (Vending Machine)
 // ============================================================================
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 enum VendingState {
     Idle,
     WaitingForMoney,
@@ -43,46 +43,69 @@ impl VendingMachine {
     }
 
     fn process_event(&mut self, event: VendingEvent) -> String {
-        match (&mut self.state, event) {
+        let new_state_and_output: Option<(VendingState, String)> = match (&self.state, event) {
             // From Idle state
-            (VendingState::Idle, VendingEvent::InsertCoin(amount)) => {
-                self.state = VendingState::HasCredit(amount);
-                format!("💵 Inserted Rp {}. Credit: Rp {}", amount, amount)
-            }
-            (VendingState::Idle, VendingEvent::SelectItem(item, price)) => {
-                self.state = VendingState::WaitingForMoney;
-                format!("📦 Selected {}. Please insert Rp {}", item, price)
-            }
-            
+            (VendingState::Idle, VendingEvent::InsertCoin(amount)) => Some((
+                VendingState::HasCredit(amount),
+                format!("💵 Inserted Rp {}. Credit: Rp {}", amount, amount),
+            )),
+            (VendingState::Idle, VendingEvent::SelectItem(item, price)) => Some((
+                VendingState::WaitingForMoney,
+                format!("📦 Selected {}. Please insert Rp {}", item, price),
+            )),
+
             // From HasCredit state
-            (VendingState::HasCredit(credit), VendingEvent::InsertCoin(amount)) => {
-                *credit += amount;
-                format!("💵 Inserted Rp {}. Total credit: Rp {}", amount, *credit)
-            }
+            (VendingState::HasCredit(credit), VendingEvent::InsertCoin(amount)) => Some((
+                VendingState::HasCredit(*credit + amount),
+                format!(
+                    "💵 Inserted Rp {}. Total credit: Rp {}",
+                    amount,
+                    *credit + amount
+                ),
+            )),
             (VendingState::HasCredit(credit), VendingEvent::SelectItem(item, price)) => {
                 if *credit >= price {
-                    *credit -= price;
-                    let change = *credit;
-                    self.state = VendingState::Dispensing(item.clone());
-                    format!("✅ Dispensing {}. Change: Rp {}", item, change)
+                    let change = *credit - price;
+                    Some((
+                        VendingState::Dispensing(item.clone()),
+                        format!("✅ Dispensing {}. Change: Rp {}", item, change),
+                    ))
                 } else {
-                    format!("❌ Insufficient credit. Need Rp {}, have Rp {}", price - *credit, *credit)
+                    Some((
+                        VendingState::HasCredit(*credit),
+                        format!(
+                            "❌ Insufficient credit. Need Rp {}, have Rp {}",
+                            price - *credit,
+                            *credit
+                        ),
+                    ))
                 }
             }
             (VendingState::HasCredit(credit), VendingEvent::Cancel) => {
                 let refund = *credit;
-                self.state = VendingState::Idle;
-                format!("🔄 Cancelled. Refund: Rp {}", refund)
+                Some((
+                    VendingState::Idle,
+                    format!("🔄 Cancelled. Refund: Rp {}", refund),
+                ))
             }
-            
+
             // From Dispensing state
             (VendingState::Dispensing(item), VendingEvent::Dispense) => {
-                self.state = VendingState::Idle;
-                format!("🎉 Enjoy your {}!", item)
+                Some((VendingState::Idle, format!("🎉 Enjoy your {}!", item)))
             }
-            
+
             // Default
-            (_, _) => "⚠️ Invalid action for current state".to_string(),
+            (_, _) => Some((
+                self.state.clone(),
+                "⚠️ Invalid action for current state".to_string(),
+            )),
+        };
+
+        if let Some((new_state, output)) = new_state_and_output {
+            self.state = new_state;
+            output
+        } else {
+            "⚠️ Invalid action for current state".to_string()
         }
     }
 
@@ -99,16 +122,28 @@ impl VendingMachine {
 
 pub fn challenge_1() {
     println!("Challenge 1 - Vending Machine State Machine:");
-    
+
     let mut machine = VendingMachine::new();
     machine.show_menu();
-    
+
     println!("\n  Simulation:");
-    println!("  {}", machine.process_event(VendingEvent::InsertCoin(10000)));
-    println!("  {}", machine.process_event(VendingEvent::SelectItem(String::from("Coffee"), 5000)));
+    println!(
+        "  {}",
+        machine.process_event(VendingEvent::InsertCoin(10000))
+    );
+    println!(
+        "  {}",
+        machine.process_event(VendingEvent::SelectItem(String::from("Coffee"), 5000))
+    );
     println!("  {}", machine.process_event(VendingEvent::Dispense));
-    println!("  {}", machine.process_event(VendingEvent::InsertCoin(5000)));
-    println!("  {}", machine.process_event(VendingEvent::SelectItem(String::from("Tea"), 4000)));
+    println!(
+        "  {}",
+        machine.process_event(VendingEvent::InsertCoin(5000))
+    );
+    println!(
+        "  {}",
+        machine.process_event(VendingEvent::SelectItem(String::from("Tea"), 4000))
+    );
     println!("  {}", machine.process_event(VendingEvent::Dispense));
 }
 
@@ -129,15 +164,9 @@ impl Expr {
     fn evaluate(&self) -> Result<i32, &'static str> {
         match self {
             Expr::Number(n) => Ok(*n),
-            Expr::Add(left, right) => {
-                Ok(left.evaluate()? + right.evaluate()?)
-            }
-            Expr::Subtract(left, right) => {
-                Ok(left.evaluate()? - right.evaluate()?)
-            }
-            Expr::Multiply(left, right) => {
-                Ok(left.evaluate()? * right.evaluate()?)
-            }
+            Expr::Add(left, right) => Ok(left.evaluate()? + right.evaluate()?),
+            Expr::Subtract(left, right) => Ok(left.evaluate()? - right.evaluate()?),
+            Expr::Multiply(left, right) => Ok(left.evaluate()? * right.evaluate()?),
             Expr::Divide(left, right) => {
                 let r = right.evaluate()?;
                 if r == 0 {
@@ -162,7 +191,7 @@ impl Expr {
 
 pub fn challenge_2() {
     println!("\nChallenge 2 - Expression AST:");
-    
+
     // (5 + 3) * 2
     let expr1 = Expr::Multiply(
         Box::new(Expr::Add(
@@ -171,7 +200,7 @@ pub fn challenge_2() {
         )),
         Box::new(Expr::Number(2)),
     );
-    
+
     // (10 - 4) / 2
     let expr2 = Expr::Divide(
         Box::new(Expr::Subtract(
@@ -180,7 +209,7 @@ pub fn challenge_2() {
         )),
         Box::new(Expr::Number(2)),
     );
-    
+
     // (5 + 3) * (10 - 4)
     let expr3 = Expr::Multiply(
         Box::new(Expr::Add(
@@ -192,19 +221,19 @@ pub fn challenge_2() {
             Box::new(Expr::Number(4)),
         )),
     );
-    
+
     println!("  Expression: {}", expr1.to_string());
     match expr1.evaluate() {
         Ok(result) => println!("  Result: {}", result),
         Err(e) => println!("  Error: {}", e),
     }
-    
+
     println!("  Expression: {}", expr2.to_string());
     match expr2.evaluate() {
         Ok(result) => println!("  Result: {}", result),
         Err(e) => println!("  Error: {}", e),
     }
-    
+
     println!("  Expression: {}", expr3.to_string());
     match expr3.evaluate() {
         Ok(result) => println!("  Result: {}", result),
@@ -229,15 +258,17 @@ enum Command {
 impl Command {
     fn parse(input: &str) -> Option<Command> {
         let parts: Vec<&str> = input.trim().split_whitespace().collect();
-        
+
         if parts.is_empty() {
             return None;
         }
-        
+
         match parts[0].to_lowercase().as_str() {
             "create" => {
                 if parts.len() >= 2 {
-                    Some(Command::Create { name: parts[1..].join(" ") })
+                    Some(Command::Create {
+                        name: parts[1..].join(" "),
+                    })
                 } else {
                     None
                 }
@@ -251,8 +282,9 @@ impl Command {
             }
             "update" => {
                 if parts.len() >= 3 {
-                    parts[1].parse::<i32>().ok().map(|id| {
-                        Command::Update { id, data: parts[2..].join(" ") }
+                    parts[1].parse::<i32>().ok().map(|id| Command::Update {
+                        id,
+                        data: parts[2..].join(" "),
                     })
                 } else {
                     None
@@ -260,7 +292,10 @@ impl Command {
             }
             "delete" => {
                 if parts.len() >= 2 {
-                    parts[1].parse::<i32>().ok().map(|id| Command::Delete { id })
+                    parts[1]
+                        .parse::<i32>()
+                        .ok()
+                        .map(|id| Command::Delete { id })
                 } else {
                     None
                 }
@@ -270,7 +305,7 @@ impl Command {
             _ => None,
         }
     }
-    
+
     fn execute(&self) -> String {
         match self {
             Command::Create { name } => format!("✅ Created: {}", name),
@@ -285,7 +320,7 @@ impl Command {
 
 pub fn challenge_3() {
     println!("\nChallenge 3 - Command Pattern:");
-    
+
     let commands = vec![
         "create Expense Tracker",
         "read 1",
@@ -295,7 +330,7 @@ pub fn challenge_3() {
         "invalid command",
         "exit",
     ];
-    
+
     for cmd_str in commands {
         println!("  Input: '{}'", cmd_str);
         match Command::parse(cmd_str) {
@@ -321,9 +356,7 @@ impl<T: Clone + std::fmt::Display> Tree<T> {
         match self {
             Tree::Empty => 0,
             Tree::Leaf(_) => 1,
-            Tree::Node(left, right) => {
-                1 + left.depth().max(right.depth())
-            }
+            Tree::Node(left, right) => 1 + left.depth().max(right.depth()),
         }
     }
 
@@ -331,44 +364,37 @@ impl<T: Clone + std::fmt::Display> Tree<T> {
         match self {
             Tree::Empty => 0,
             Tree::Leaf(_) => 1,
-            Tree::Node(left, right) => {
-                1 + left.size() + right.size()
-            }
+            Tree::Node(left, right) => 1 + left.size() + right.size(),
         }
     }
 
-    fn contains(&self, value: &T) -> bool 
+    fn contains(&self, value: &T) -> bool
     where
         T: PartialEq,
     {
         match self {
             Tree::Empty => false,
             Tree::Leaf(v) => v == value,
-            Tree::Node(left, right) => {
-                left.contains(value) || right.contains(value)
-            }
+            Tree::Node(left, right) => left.contains(value) || right.contains(value),
         }
     }
 }
 
 pub fn challenge_4() {
     println!("\nChallenge 4 - Tree Data Structure:");
-    
+
     // Create a tree:
     //       Node
     //      /    \
     //   Leaf(1)  Node
     //           /    \
     //       Leaf(2)  Leaf(3)
-    
+
     let tree: Tree<i32> = Tree::Node(
         Box::new(Tree::Leaf(1)),
-        Box::new(Tree::Node(
-            Box::new(Tree::Leaf(2)),
-            Box::new(Tree::Leaf(3)),
-        )),
+        Box::new(Tree::Node(Box::new(Tree::Leaf(2)), Box::new(Tree::Leaf(3)))),
     );
-    
+
     println!("  Tree depth: {}", tree.depth());
     println!("  Tree size: {}", tree.size());
     println!("  Contains 2: {}", tree.contains(&2));
