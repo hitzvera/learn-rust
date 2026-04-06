@@ -130,8 +130,8 @@ pub fn using_if_let(opt: Option<i32>) -> i32 {
  * HINT: You can chain if let conditions
  */
 pub fn process_data(a: Option<i32>, b: Option<i32>) -> i32 {
-    if let Some(n) = a {
-        if let Some(m) = b { n + m } else { 0 }
+    if let (Some(n), Some(m)) = (a, b) {
+        n + m
     } else {
         0
     }
