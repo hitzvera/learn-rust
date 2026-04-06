@@ -22,10 +22,21 @@
  *
  * HINT: Use match expression
  */
-pub fn get_day_name(day: u8) -> &str {
-    // YOUR CODE HERE
-    // TODO: Implement using match
-    todo!()
+pub fn get_day_name(day: u8) -> &'static str {
+    const DAYS: [&str; 7] = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ];
+
+    match day {
+        1..=7 => DAYS[(day - 1) as usize],
+        _ => "Invalid day",
+    }
 }
 
 // ============================================================================
@@ -38,9 +49,11 @@ pub fn get_day_name(day: u8) -> &str {
  *
  * HINT: Match on the boolean value
  */
-pub fn yes_no(value: bool) -> &str {
-    // YOUR CODE HERE
-    todo!()
+pub fn yes_no(value: bool) -> &'static str {
+    match value {
+        true => "Yes",
+        false => "No",
+    }
 }
 
 // ============================================================================
@@ -58,9 +71,13 @@ pub fn yes_no(value: bool) -> &str {
  *
  * HINT: Use | to match multiple patterns
  */
-pub fn get_grade_message(grade: char) -> &str {
-    // YOUR CODE HERE
-    todo!()
+pub fn get_grade_message(grade: char) -> &'static str {
+    match grade {
+        'A' | 'B' => "Great job!",
+        'C' | 'D' => "Keep trying!",
+        'F' => "See you next semester",
+        _ => "Invalid grade",
+    }
 }
 
 // ============================================================================
@@ -76,9 +93,14 @@ pub fn get_grade_message(grade: char) -> &str {
  *
  * HINT: Use match with if guards (pattern if condition)
  */
-pub fn classify_number(num: i32) -> &str {
+pub fn classify_number(num: i32) -> &'static str {
     // YOUR CODE HERE
-    todo!()
+    match num {
+        n if n > 0 && n % 2 == 0 => "Positive and even",
+        n if n > 0 && n % 2 != 0 => "Positive and odd",
+        n if n < 0 => "Negative",
+        _ => "Zero",
+    }
 }
 
 // ============================================================================
@@ -94,9 +116,13 @@ pub fn classify_number(num: i32) -> &str {
  *
  * HINT: Use range patterns (start..=end)
  */
-pub fn get_age_group(age: u8) -> &str {
-    // YOUR CODE HERE
-    todo!()
+pub fn get_age_group(age: u8) -> &'static str {
+    match age {
+        0..=12 => "Child",
+        13..=17 => "Teenager",
+        18..=64 => "Adult",
+        _ => "Senior",
+    }
 }
 
 // ============================================================================
@@ -113,10 +139,18 @@ pub fn get_age_group(age: u8) -> &str {
  */
 
 // Define the enum here
+enum TrafficLight {
+    Red,
+    Yellow,
+    Green,
+}
 
-pub fn get_action(light: TrafficLight) -> &str {
-    // YOUR CODE HERE
-    todo!()
+pub fn get_action(light: TrafficLight) -> &'static str {
+    match light {
+        TrafficLight::Green => "GO",
+        TrafficLight::Red => "STOP",
+        TrafficLight::Yellow => "CAUTION",
+    }
 }
 
 // ============================================================================
@@ -135,8 +169,7 @@ pub fn get_action(light: TrafficLight) -> &str {
  * HINT: Match on the char with multiple patterns
  */
 pub fn is_vowel(c: char) -> bool {
-    // YOUR CODE HERE
-    todo!()
+    matches!(c.to_ascii_lowercase(), 'a' | 'i' | 'u' | 'e' | 'o')
 }
 
 // ============================================================================
@@ -145,40 +178,40 @@ pub fn is_vowel(c: char) -> bool {
 
 pub fn run_challenges() {
     println!("=== Level 1: Match Basics ===\n");
-    
+
     println!("Challenge 1: get_day_name");
     println!("  1 → {}", get_day_name(1));
     println!("  7 → {}", get_day_name(7));
     println!("  10 → {}", get_day_name(10));
-    
+
     println!("\nChallenge 2: yes_no");
     println!("  true → {}", yes_no(true));
     println!("  false → {}", yes_no(false));
-    
+
     println!("\nChallenge 3: get_grade_message");
     println!("  A → {}", get_grade_message('A'));
     println!("  C → {}", get_grade_message('C'));
     println!("  F → {}", get_grade_message('F'));
-    
+
     println!("\nChallenge 4: classify_number");
     println!("  4 → {}", classify_number(4));
     println!("  7 → {}", classify_number(7));
     println!("  -3 → {}", classify_number(-3));
     println!("  0 → {}", classify_number(0));
-    
+
     println!("\nChallenge 5: get_age_group");
     println!("  5 → {}", get_age_group(5));
     println!("  15 → {}", get_age_group(15));
     println!("  30 → {}", get_age_group(30));
     println!("  70 → {}", get_age_group(70));
-    
+
     println!("\nChallenge 6: get_action");
     // Test after you define TrafficLight
-    
+
     println!("\nChallenge 7: is_vowel");
     println!("  'a' → {}", is_vowel('a'));
     println!("  'E' → {}", is_vowel('E'));
     println!("  'x' → {}", is_vowel('x'));
-    
+
     println!("\n✅ Level 1 Complete!\n");
 }

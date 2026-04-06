@@ -18,8 +18,10 @@
  * HINT: Match on the Option enum
  */
 pub fn unwrap_option(opt: Option<i32>) -> i32 {
-    // YOUR CODE HERE
-    todo!()
+    match opt {
+        Some(n) => n,
+        None => -1,
+    }
 }
 
 // ============================================================================
@@ -36,8 +38,10 @@ pub fn unwrap_option(opt: Option<i32>) -> i32 {
  * - Err("Not found") → "Error: Not found"
  */
 pub fn handle_result(result: Result<i32, String>) -> String {
-    // YOUR CODE HERE
-    todo!()
+    match result {
+        Ok(value) => format!("Success: {}", value),
+        Err(message) => format!("Error: {}", message),
+    }
 }
 
 // ============================================================================
@@ -62,10 +66,21 @@ pub fn handle_result(result: Result<i32, String>) -> String {
  */
 
 // Define the enum here
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
 
 pub fn describe_message(msg: Message) -> String {
     // YOUR CODE HERE
-    todo!()
+    match msg {
+        Message::Quit => "Quit".into(),
+        Message::Move { x, y } => format!("Move to ({}, {})", x, y),
+        Message::Write(content) => format!("Write: {}", content),
+        Message::ChangeColor(r, g, b) => format!("Color: RGB({}, {}, {})", r, g, b),
+    }
 }
 
 // ============================================================================
@@ -85,7 +100,10 @@ pub fn describe_message(msg: Message) -> String {
  */
 pub fn get_nested_value(opt: Option<Option<i32>>) -> i32 {
     // YOUR CODE HERE
-    todo!()
+    match opt {
+        Some(Some(n)) => n,
+        _ => 0,
+    }
 }
 
 // ============================================================================
@@ -100,7 +118,8 @@ pub fn get_nested_value(opt: Option<Option<i32>>) -> i32 {
  */
 pub fn get_first(tuple: (i32, i32, i32)) -> i32 {
     // YOUR CODE HERE
-    todo!()
+    let (first, _, _) = tuple;
+    first
 }
 
 // ============================================================================
@@ -118,10 +137,18 @@ pub fn get_first(tuple: (i32, i32, i32)) -> i32 {
  */
 
 // Define the struct here
+struct Person {
+    name: String,
+    age: u8,
+}
 
 pub fn greet(person: Person) -> String {
-    // YOUR CODE HERE
-    todo!()
+    let Person { name, age } = person;
+    if age >= 18 {
+        return format!("Hello, {name}!");
+    }
+
+    format!("Hi there, {name}!")
 }
 
 // ============================================================================
@@ -140,15 +167,25 @@ pub fn greet(person: Person) -> String {
  */
 
 // Define the enum here
+enum Coin {
+    Heads,
+    Tails,
+}
 
-pub fn flip_coin(coin: Coin) -> &str {
-    // YOUR CODE HERE
-    todo!()
+pub fn flip_coin(coin: Coin) -> &'static str {
+    match coin {
+        Coin::Tails => "Tails! You win 5 points!",
+        Coin::Heads => "Heads! You win 10 points!",
+    }
 }
 
 pub fn flip_and_count(coin: Coin, score: i32) -> i32 {
-    // YOUR CODE HERE
-    todo!()
+    let additional_score = match coin {
+        Coin::Heads => 10,
+        Coin::Tails => 5,
+    };
+
+    score + additional_score
 }
 
 // ============================================================================
@@ -167,10 +204,22 @@ pub fn flip_and_count(coin: Coin, score: i32) -> i32 {
  */
 
 // Define the enum here
+enum HttpStatus {
+    Ok(u16),
+    Created(u16),
+    NotFound(u16),
+    ServerError(u16),
+    Unknown(u16),
+}
 
-pub fn handle_status(status: HttpStatus) -> &str {
-    // YOUR CODE HERE
-    todo!()
+pub fn handle_status(status: HttpStatus) -> &'static str {
+    match status {
+        HttpStatus::Created(201) => "Created",
+        HttpStatus::Ok(200) => "Ok",
+        HttpStatus::NotFound(404) => "Not Found",
+        HttpStatus::ServerError(500) => "Server Error",
+        _ => "Unknown",
+    }
 }
 
 // ============================================================================
@@ -179,34 +228,83 @@ pub fn handle_status(status: HttpStatus) -> &str {
 
 pub fn run_challenges() {
     println!("=== Level 2: Match with Data ===\n");
-    
+
     println!("Challenge 1: unwrap_option");
     println!("  Some(42) → {}", unwrap_option(Some(42)));
     println!("  None → {}", unwrap_option(None));
-    
+
     println!("\nChallenge 2: handle_result");
     println!("  Ok(100) → {}", handle_result(Ok(100)));
-    println!("  Err(\"Failed\") → {}", handle_result(Err(String::from("Failed"))));
-    
+    println!(
+        "  Err(\"Failed\") → {}",
+        handle_result(Err(String::from("Failed")))
+    );
+
     println!("\nChallenge 3: describe_message");
-    // Test after you define Message
-    
+    println!("  Quit → {}", describe_message(Message::Quit));
+    println!(
+        "  Move {{ x: 10, y: 20 }} → {}",
+        describe_message(Message::Move { x: 10, y: 20 })
+    );
+    println!(
+        "  Write(\"Hi\") → {}",
+        describe_message(Message::Write(String::from("Hi")))
+    );
+    println!(
+        "  ChangeColor(255, 0, 0) → {}",
+        describe_message(Message::ChangeColor(255, 0, 0))
+    );
+
     println!("\nChallenge 4: get_nested_value");
     println!("  Some(Some(5)) → {}", get_nested_value(Some(Some(5))));
     println!("  Some(None) → {}", get_nested_value(Some(None)));
     println!("  None → {}", get_nested_value(None));
-    
+
     println!("\nChallenge 5: get_first");
     println!("  (1, 2, 3) → {}", get_first((1, 2, 3)));
-    
+
     println!("\nChallenge 6: greet");
-    // Test after you define Person
-    
+    let adult = Person {
+        name: String::from("Alice"),
+        age: 25,
+    };
+    let child = Person {
+        name: String::from("Bob"),
+        age: 12,
+    };
+    println!("  Person {{ name: \"Alice\", age: 25 }} → {}", greet(adult));
+    println!("  Person {{ name: \"Bob\", age: 12 }} → {}", greet(child));
+
     println!("\nChallenge 7: flip_coin");
-    // Test after you define Coin
-    
+    println!("  Heads → {}", flip_coin(Coin::Heads));
+    println!("  Tails → {}", flip_coin(Coin::Tails));
+    println!(
+        "  flip_and_count(Heads, 20) → {}",
+        flip_and_count(Coin::Heads, 20)
+    );
+    println!(
+        "  flip_and_count(Tails, 20) → {}",
+        flip_and_count(Coin::Tails, 20)
+    );
+
     println!("\nChallenge 8: handle_status");
-    // Test after you define HttpStatus
-    
+    println!("  Ok(200) → {}", handle_status(HttpStatus::Ok(200)));
+    println!(
+        "  Created(201) → {}",
+        handle_status(HttpStatus::Created(201))
+    );
+    println!(
+        "  NotFound(404) → {}",
+        handle_status(HttpStatus::NotFound(404))
+    );
+    println!(
+        "  ServerError(500) → {}",
+        handle_status(HttpStatus::ServerError(500))
+    );
+    println!(
+        "  Unknown(418) → {}",
+        handle_status(HttpStatus::Unknown(418))
+    );
+
     println!("\n✅ Level 2 Complete!\n");
 }

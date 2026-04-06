@@ -17,9 +17,12 @@
  *
  * HINT: Use `if let` for the Some case, `else` for None
  */
-pub fn check_some(opt: Option<i32>) {
-    // YOUR CODE HERE
-    todo!()
+pub fn check_some(opt: Option<i32>) -> String {
+    if (Some(n)) {
+        format!("Value: {n}")
+    } else {
+        format!("No Value")
+    }
 }
 
 // ============================================================================
@@ -169,41 +172,41 @@ pub fn full_match(opt: Option<i32>) -> &str {
 
 pub fn run_challenges() {
     println!("=== Level 3: If Let ===\n");
-    
+
     println!("Challenge 1: check_some");
     print!("  Some(42) → ");
     check_some(Some(42));
     print!("  None → ");
     check_some(None);
-    
+
     println!("\nChallenge 2: try_parse");
     println!("  Ok(100) → {}", try_parse(Ok(100)));
     println!("  Err(_) → {}", try_parse(Err(String::from("oops"))));
-    
+
     println!("\nChallenge 3: handle_click");
     // Test after you define Event
-    
+
     println!("\nChallenge 4: get_name_length");
     println!("  Some(\"Rust\") → {}", get_name_length(Some("Rust")));
     println!("  None → {}", get_name_length(None));
-    
+
     println!("\nChallenge 5: If Let vs Match");
     println!("  using_match(Some(5)) → {}", using_match(Some(5)));
     println!("  using_if_let(Some(5)) → {}", using_if_let(Some(5)));
     println!("  (Both should return 10)");
-    
+
     println!("\nChallenge 6: process_data");
     println!("  Some(3), Some(7) → {}", process_data(Some(3), Some(7)));
     println!("  Some(3), None → {}", process_data(Some(3), None));
-    
+
     println!("\nChallenge 7: get_user_name");
     // Test after you define User
-    
+
     println!("\nChallenge 8: full_match");
     println!("  Some(5) → {}", full_match(Some(5)));
     println!("  Some(-3) → {}", full_match(Some(-3)));
     println!("  Some(0) → {}", full_match(Some(0)));
     println!("  None → {}", full_match(None));
-    
+
     println!("\n✅ Level 3 Complete!\n");
 }
