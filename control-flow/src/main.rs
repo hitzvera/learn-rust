@@ -11,10 +11,10 @@ fn main() {
     // challenge::one::run_challenges();
 
     // Level 2: Match with Data
-    challenge::two::run_challenges();
+    // challenge::two::run_challenges();
 
     // Level 3: If Let
-    // challenge::three::run_challenges();
+    challenge::three::run_challenges();
 
     // Level 4: Let Else
     // challenge::four::run_challenges();

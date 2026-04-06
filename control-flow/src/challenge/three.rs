@@ -17,11 +17,11 @@
  *
  * HINT: Use `if let` for the Some case, `else` for None
  */
-pub fn check_some(opt: Option<i32>) -> String {
-    if (Some(n)) {
-        format!("Value: {n}")
+pub fn check_some(opt: Option<i32>) {
+    if let Some(n) = opt {
+        println!("Value: {n}")
     } else {
-        format!("No Value")
+        println!("No value")
     }
 }
 
@@ -38,7 +38,7 @@ pub fn check_some(opt: Option<i32>) -> String {
  */
 pub fn try_parse(result: Result<i32, String>) -> i32 {
     // YOUR CODE HERE
-    todo!()
+    if let Ok(n) = result { n } else { -1 }
 }
 
 // ============================================================================
@@ -59,10 +59,18 @@ pub fn try_parse(result: Result<i32, String>) -> i32 {
  */
 
 // Define the enum here
+enum Event {
+    Click { x: i32, y: i32 },
+    KeyPress(char),
+    Scroll(i32),
+}
 
 pub fn handle_click(event: Event) -> String {
-    // YOUR CODE HERE
-    todo!()
+    if let Event::Click { x, y } = event {
+        format!("Clicked at ({x}, {y})")
+    } else {
+        format!("Not a click")
+    }
 }
 
 // ============================================================================
@@ -77,8 +85,7 @@ pub fn handle_click(event: Event) -> String {
  * HINT: Use `if let` with pattern matching
  */
 pub fn get_name_length(opt: Option<&str>) -> usize {
-    // YOUR CODE HERE
-    todo!()
+    if let Some(n) = opt { n.len() } else { 0 }
 }
 
 // ============================================================================
@@ -101,13 +108,14 @@ pub fn get_name_length(opt: Option<&str>) -> usize {
  * - When would you use each?
  */
 pub fn using_match(opt: Option<i32>) -> i32 {
-    // YOUR CODE HERE - use match
-    todo!()
+    match opt {
+        Some(n) => n * 2,
+        None => 0,
+    }
 }
 
 pub fn using_if_let(opt: Option<i32>) -> i32 {
-    // YOUR CODE HERE - use if let
-    todo!()
+    if let Some(n) = opt { n * 2 } else { 0 }
 }
 
 // ============================================================================
@@ -122,8 +130,11 @@ pub fn using_if_let(opt: Option<i32>) -> i32 {
  * HINT: You can chain if let conditions
  */
 pub fn process_data(a: Option<i32>, b: Option<i32>) -> i32 {
-    // YOUR CODE HERE
-    todo!()
+    if let Some(n) = a {
+        if let Some(m) = b { n + m } else { 0 }
+    } else {
+        0
+    }
 }
 
 // ============================================================================
@@ -141,10 +152,17 @@ pub fn process_data(a: Option<i32>, b: Option<i32>) -> i32 {
  */
 
 // Define the struct here
+struct User {
+    id: u32,
+    name: Option<String>,
+}
 
 pub fn get_user_name(user: User) -> String {
-    // YOUR CODE HERE
-    todo!()
+    if let Some(name) = user.name {
+        format!("User {name}")
+    } else {
+        format!("Anonymous User")
+    }
 }
 
 // ============================================================================
@@ -161,9 +179,14 @@ pub fn get_user_name(user: User) -> String {
  * HINT: This is better with match than if let!
  * Think about why.
  */
-pub fn full_match(opt: Option<i32>) -> &str {
-    // YOUR CODE HERE
-    todo!()
+pub fn full_match(opt: Option<i32>) -> String {
+    match opt {
+        Some(n) if n > 0 => format!("Positive: {n}"),
+        Some(n) if n < 0 => format!("Negative: {n}"),
+        Some(0) => "Zero".to_string(),
+        None => "Nothing".to_string(),
+        _ => "Error".to_string(),
+    }
 }
 
 // ============================================================================
@@ -184,7 +207,12 @@ pub fn run_challenges() {
     println!("  Err(_) → {}", try_parse(Err(String::from("oops"))));
 
     println!("\nChallenge 3: handle_click");
-    // Test after you define Event
+    println!(
+        "  Click {{ x: 10, y: 20 }} → {}",
+        handle_click(Event::Click { x: 10, y: 20 })
+    );
+    println!("  KeyPress('a') → {}", handle_click(Event::KeyPress('a')));
+    println!("  Scroll(5) → {}", handle_click(Event::Scroll(5)));
 
     println!("\nChallenge 4: get_name_length");
     println!("  Some(\"Rust\") → {}", get_name_length(Some("Rust")));
@@ -200,7 +228,19 @@ pub fn run_challenges() {
     println!("  Some(3), None → {}", process_data(Some(3), None));
 
     println!("\nChallenge 7: get_user_name");
-    // Test after you define User
+    let user_with_name = User {
+        id: 1,
+        name: Some(String::from("Alice")),
+    };
+    let user_without_name = User { id: 2, name: None };
+    println!(
+        "  User {{ id: 1, name: Some(\"Alice\") }} → {}",
+        get_user_name(user_with_name)
+    );
+    println!(
+        "  User {{ id: 2, name: None }} → {}",
+        get_user_name(user_without_name)
+    );
 
     println!("\nChallenge 8: full_match");
     println!("  Some(5) → {}", full_match(Some(5)));
