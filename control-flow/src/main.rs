@@ -14,10 +14,10 @@ fn main() {
     // challenge::two::run_challenges();
 
     // Level 3: If Let
-    challenge::three::run_challenges();
+    // challenge::three::run_challenges();
 
     // Level 4: Let Else
-    // challenge::four::run_challenges();
+    challenge::four::run_challenges();
 
     // Level 5: Choose the Right Tool
     // challenge::five::run_challenges();

@@ -26,8 +26,8 @@
  * };
  */
 pub fn unwrap_or_zero(opt: Option<i32>) -> i32 {
-    // YOUR CODE HERE
-    todo!()
+    let Some(n) = opt else { return 0 };
+    n
 }
 
 // ============================================================================
@@ -42,8 +42,8 @@ pub fn unwrap_or_zero(opt: Option<i32>) -> i32 {
  * HINT: Use `let...else` with Result pattern
  */
 pub fn parse_or_error(result: Result<i32, String>) -> i32 {
-    // YOUR CODE HERE
-    todo!()
+    let Ok(n) = result else { return -999 };
+    n
 }
 
 // ============================================================================
@@ -58,8 +58,8 @@ pub fn parse_or_error(result: Result<i32, String>) -> i32 {
  * HINT: Chain two `let...else` statements
  */
 pub fn add_options(a: Option<i32>, b: Option<i32>) -> i32 {
-    // YOUR CODE HERE
-    todo!()
+    let (Some(x), Some(y)) = (a, b) else { return 0 };
+    x + y
 }
 
 // ============================================================================
@@ -75,7 +75,8 @@ pub fn add_options(a: Option<i32>, b: Option<i32>) -> i32 {
  */
 pub fn get_inner(opt: Option<Option<i32>>) -> i32 {
     // YOUR CODE HERE
-    todo!()
+    let Some(Some(n)) = opt else { return -1 };
+    n
 }
 
 // ============================================================================
@@ -96,10 +97,24 @@ pub fn get_inner(opt: Option<Option<i32>>) -> i32 {
  */
 
 // Define the struct here
+struct Config {
+    host: Option<String>,
+    port: Option<u16>,
+    timeout: Option<u32>,
+}
 
 pub fn get_config_info(config: Config) -> String {
-    // YOUR CODE HERE
-    todo!()
+    let Some(host) = config.host else {
+        return "Incomplete config".to_string();
+    };
+    let Some(port) = config.port else {
+        return "Incomplete config".to_string();
+    };
+    let Some(timeout) = config.timeout else {
+        return "Incomplete config".to_string();
+    };
+
+    format!("Host: {host}, Port: {port}, Timeout: {timeout}")
 }
 
 // ============================================================================
@@ -122,13 +137,15 @@ pub fn get_config_info(config: Config) -> String {
  * - When would you use each?
  */
 pub fn with_match(opt: Option<String>) -> usize {
-    // YOUR CODE HERE - use match
-    todo!()
+    match opt {
+        Some(n) => n.len(),
+        _ => 0,
+    }
 }
 
 pub fn with_let_else(opt: Option<String>) -> usize {
-    // YOUR CODE HERE - use let...else
-    todo!()
+    let Some(n) = opt else { return 0 };
+    n.len()
 }
 
 // ============================================================================
@@ -144,8 +161,11 @@ pub fn with_let_else(opt: Option<String>) -> usize {
  * HINT: Use `let...else` for the None case, then `if` for the age check
  */
 pub fn validate_age(age_opt: Option<i32>) -> Result<i32, &'static str> {
-    // YOUR CODE HERE
-    todo!()
+    let Some(age) = age_opt else {
+        return Err("Age not provided");
+    };
+
+    if age >= 18 { Ok(age) } else { Err("Too Young") }
 }
 
 // ============================================================================
@@ -167,10 +187,22 @@ pub fn validate_age(age_opt: Option<i32>) -> Result<i32, &'static str> {
  */
 
 // Define the struct here
+struct User {
+    id: u32,
+    email: Option<String>,
+    verified: bool,
+}
 
 pub fn send_verification_email(user: User) -> Result<String, &'static str> {
-    // YOUR CODE HERE
-    todo!()
+    let Some(email) = user.email else {
+        return Err("No Email on file");
+    };
+
+    if user.verified {
+        return Err("User already verified");
+    }
+
+    Ok(format!("Email sent to {email}"))
 }
 
 // ============================================================================
@@ -186,8 +218,11 @@ pub fn send_verification_email(user: User) -> Result<String, &'static str> {
  * HINT: Use `let...else` twice - once for Option, once for Result
  */
 pub fn parse_and_double(opt: Option<&str>) -> i32 {
-    // YOUR CODE HERE
-    todo!()
+    let Some(num_string) = opt else { return 0 };
+    let Ok(new_num) = num_string.parse::<i32>() else {
+        return 0;
+    };
+    new_num * 2
 }
 
 // ============================================================================
@@ -203,9 +238,14 @@ pub fn parse_and_double(opt: Option<&str>) -> i32 {
  *
  * HINT: This is better with match! Think about why let...else is awkward here.
  */
-pub fn categorize(opt: Option<i32>) -> &str {
-    // YOUR CODE HERE
-    todo!()
+pub fn categorize(opt: Option<i32>) -> &'static str {
+    match opt {
+        Some(n) if n > 0 => "Positive",
+        Some(n) if n < 0 => "Negative",
+        Some(0) => "Zero",
+        None => "Nothing",
+        _ => "Unknown", // This case should never happen
+    }
 }
 
 // ============================================================================
@@ -214,49 +254,55 @@ pub fn categorize(opt: Option<i32>) -> &str {
 
 pub fn run_challenges() {
     println!("=== Level 4: Let Else ===\n");
-    
+
     println!("Challenge 1: unwrap_or_zero");
     println!("  Some(42) → {}", unwrap_or_zero(Some(42)));
     println!("  None → {}", unwrap_or_zero(None));
-    
+
     println!("\nChallenge 2: parse_or_error");
     println!("  Ok(100) → {}", parse_or_error(Ok(100)));
     println!("  Err(_) → {}", parse_or_error(Err(String::from("oops"))));
-    
+
     println!("\nChallenge 3: add_options");
     println!("  Some(3), Some(7) → {}", add_options(Some(3), Some(7)));
     println!("  Some(3), None → {}", add_options(Some(3), None));
-    
+
     println!("\nChallenge 4: get_inner");
     println!("  Some(Some(5)) → {}", get_inner(Some(Some(5))));
     println!("  Some(None) → {}", get_inner(Some(None)));
     println!("  None → {}", get_inner(None));
-    
+
     println!("\nChallenge 5: get_config_info");
     // Test after you define Config
-    
+
     println!("\nChallenge 6: Let Else vs Match");
-    println!("  with_match(Some(String::from(\"Rust\"))) → {}", with_match(Some(String::from("Rust"))));
-    println!("  with_let_else(Some(String::from(\"Rust\"))) → {}", with_let_else(Some(String::from("Rust"))));
-    
+    println!(
+        "  with_match(Some(String::from(\"Rust\"))) → {}",
+        with_match(Some(String::from("Rust")))
+    );
+    println!(
+        "  with_let_else(Some(String::from(\"Rust\"))) → {}",
+        with_let_else(Some(String::from("Rust")))
+    );
+
     println!("\nChallenge 7: validate_age");
     println!("  Some(25) → {:?}", validate_age(Some(25)));
     println!("  Some(15) → {:?}", validate_age(Some(15)));
     println!("  None → {:?}", validate_age(None));
-    
+
     println!("\nChallenge 8: send_verification_email");
     // Test after you define User
-    
+
     println!("\nChallenge 9: parse_and_double");
     println!("  Some(\"21\") → {}", parse_and_double(Some("21")));
     println!("  Some(\"abc\") → {}", parse_and_double(Some("abc")));
     println!("  None → {}", parse_and_double(None));
-    
+
     println!("\nChallenge 10: categorize");
     println!("  Some(5) → {}", categorize(Some(5)));
     println!("  Some(-3) → {}", categorize(Some(-3)));
     println!("  Some(0) → {}", categorize(Some(0)));
     println!("  None → {}", categorize(None));
-    
+
     println!("\n✅ Level 4 Complete!\n");
 }
