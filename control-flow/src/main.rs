@@ -17,8 +17,8 @@ fn main() {
     // challenge::three::run_challenges();
 
     // Level 4: Let Else
-    challenge::four::run_challenges();
+    // challenge::four::run_challenges();
 
     // Level 5: Choose the Right Tool
-    // challenge::five::run_challenges();
+    challenge::five::run_challenges();
 }
