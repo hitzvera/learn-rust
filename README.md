@@ -42,11 +42,11 @@
   - [x] Random numbers
   - [x] Loop and match
   
-- [ ] **Chapter 3:** Common Programming Concepts
-  - [ ] Variables & Mutability
-  - [ ] Data Types
-  - [ ] Functions
-  - [ ] Control Flow
+- [x] **Chapter 3:** Common Programming Concepts
+  - [x] Variables & Mutability
+  - [x] Data Types
+  - [x] Functions
+  - [x] Control Flow
   
 - [ ] **Chapter 4:** Ownership
   - [ ] Stack & Heap
